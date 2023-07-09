@@ -53,8 +53,10 @@
                                 Console.SetCursorPosition(0, 0);
                                 Console.WriteLine(new string(' ', 60));
                                 Console.SetCursorPosition(0, 0);
-                                s = s.Remove(s.IndexOf('+')+1, s.LastIndexOf('*')-1-s.IndexOf('+'));
-                                s = s.Insert(s.IndexOf('+')+1, b.ToString());
+                                s = s.Remove(s.IndexOf('^')+2, s.LastIndexOf('*')-s.IndexOf('^')-2);
+                                if (b.ToString()[0]=='-')
+                                s = s.Insert(s.IndexOf('^')+2, b.ToString());
+                                else s = s.Insert(s.IndexOf('^') + 2, "+"+b.ToString());
                                 Console.WriteLine(s);
                                 binput = false;
                             }
@@ -64,8 +66,10 @@
                                 Console.SetCursorPosition(0, 0);
                                 Console.WriteLine(new string(' ', 60));
                                 Console.SetCursorPosition(0, 0);
-                                s = s.Remove(s.LastIndexOf('+')+1, s.IndexOf('=')-1-s.LastIndexOf('+'));
-                                s = s.Insert(s.LastIndexOf('+')+1, c.ToString());
+                                s = s.Remove(s.LastIndexOf('x')+1, s.IndexOf('=')-s.LastIndexOf('x')-1);
+                                if (c.ToString()[0] == '-')
+                                    s = s.Insert(s.LastIndexOf('x') + 1, c.ToString());
+                                else s = s.Insert(s.LastIndexOf('x') + 1, "+" + c.ToString());
                                 Console.WriteLine(s);
                                 cinput = false;
                             }
