@@ -31,20 +31,20 @@ namespace HW9
                     Console.WriteLine("Переменная может принимать любые значения");
                 else
                 {
-                    double root1 = -_c / _b;
+                    double root1 = _c==0? 0:-_c / _b;
                     roots.Add(root1);
                 }
             }
             else if (discriminant > 0)
             {
-                double root1 = (-_b + Math.Sqrt(discriminant)) / (2 * _a);
+                double root1 = (_c==0)?0:(-_b + Math.Sqrt(discriminant)) / (2 * _a);
                 double root2 = (-_b - Math.Sqrt(discriminant)) / (2 * _a);
                 roots.Add(root1);
                 roots.Add(root2);
             }
             else if (discriminant == 0)
             {
-                double root1 = (-_b) / (2 * _a);
+                double root1 = _b==0?0:(-_b) / (2 * _a);
                 roots.Add(root1);
             }
             else

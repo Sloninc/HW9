@@ -89,7 +89,7 @@ namespace HW9
                                 Console.SetCursorPosition(0, 0);
                                 Console.WriteLine(new string(' ', 60));
                                 Console.SetCursorPosition(0, 0);
-                                Regex regex = (preb==1||preb==-1)? new Regex(@"(\+|\-)?x(?(?=\^)2)") : new Regex(@"(\+|\-)?[0-9b\,]+\*x(?(?=\^)2)");
+                                Regex regex = (preb==1||preb==-1)? new Regex(@"(\+|\-)?x(?!\^)") : new Regex(@"(\+|\-)?(b?|[0-9]*[.,]?[0-9]+)\*x(?!\^)");
                                 if (Regex.IsMatch(equality, @"x[^^]"))
                                 {
                                     if (b == 0)
@@ -122,7 +122,7 @@ namespace HW9
                                         else if(ainput)
                                             equality = (b > 0) ? equality.Insert("a*x^2".Length, $"+{b}*x") : equality.Insert("a*x^2".Length, $"{b}*x");
                                         else
-                                            equality = equality.Insert($"{a}*x^2".Length, $"{b}*x");
+                                            equality = equality.Insert($"{a}*x^2".Length, $"+{b}*x");
                                     }
 
                                 }
@@ -140,8 +140,8 @@ namespace HW9
                                 Console.SetCursorPosition(0, 0);
                                 Console.WriteLine(new string(' ', 60));
                                 Console.SetCursorPosition(0, 0);
-                                Regex regex = new Regex(@"(\+|\-)+(c?|[0-9]?\,?[0-9]+)=");
-                                if (Regex.IsMatch(equality, @"(\+|\-)+(c?|[0-9]?\,?[0-9]+)="))
+                                Regex regex = new Regex(@"(\+|\-)+(c?|[0-9]*[.,]?[0-9]+)=");
+                                if (Regex.IsMatch(equality, @"(\+|\-)+(c?|[0-9]*[.,]?[0-9]+)="))
                                 {
                                     if (c == 0) 
                                     {
