@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,11 @@ namespace HW9
 {
     internal class DiscriminantException : Exception
     {
-        public DiscriminantException(double discriminant) : base("Вещественных значений не найдено")
+        //private QuadraticEquation equation;
+        public DiscriminantException(QuadraticEquation qEquit):base("Вещественных значений не найдено")
         {
-
+            Data.Add("Discriminant", qEquit.Discriminant);
         }
+      
     }
 }

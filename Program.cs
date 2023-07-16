@@ -1,17 +1,18 @@
 ﻿using System.Text.RegularExpressions;
+using System.Text;
 namespace HW9
 {
     internal class Program
     {
 
-       static string equality = "a*x^2+b*x+c=0";
+       private static string equality = "a*x^2+b*x+c=0";
         /// <summary>
         /// Исходное положение стрелки меню
         /// </summary>
         private static int selectedValue = 0;
         private static ConsoleKeyInfo ki;
-        private static bool ainput = true, binput = true, cinput = true;
-        private static double a = 0, b = 0, c = 0;
+        private static int a = 0, b = 0, c = 0;
+      private static bool ainput=true,binput=true,cinput=true;  
         static void Main()
         {
             try
@@ -19,6 +20,7 @@ namespace HW9
                 selectedValue = 1;
                 PrintMenu();
                 WriteCursor(selectedValue);
+                //bool isNoneAllInput = true;
                 do
                 {
 
@@ -37,7 +39,7 @@ namespace HW9
                             break;
                     }
                     WriteCursor(selectedValue);
-                } while (ainput||binput||cinput);
+                } while (ainput || binput || cinput);
                 Console.SetCursorPosition(0, 4);
                 QuadraticEquation func = new QuadraticEquation(a, b, c);
                 var result = func.Roots;
@@ -54,6 +56,10 @@ namespace HW9
             {
                 Console.WriteLine(fe.Message);
             }
+            catch(OverflowException oe)
+            {
+                Console.WriteLine(oe.Message);
+            }
             Console.ReadLine();
         }
 
@@ -61,14 +67,61 @@ namespace HW9
         {
             ClearString(selectedValue);
             Console.Write($" {options[selectedValue - 1]}: {ki.KeyChar.ToString()}");
+            StringBuilder s = new StringBuilder(ki.KeyChar.ToString());
+            ConsoleKeyInfo cc;
+            int cursor = Console.CursorLeft;
+            do
+            {
+                cc = Console.ReadKey();
+                if (cc.Key == ConsoleKey.Backspace)
+                {
+                    s = (cursor > 4) ? s.Remove(cursor-5, 1) : s;
+                    cursor = (cursor > 4) ? cursor - 1 : cursor;
+                    ClearString(selectedValue);
+                    Console.Write($" {options[selectedValue - 1]}: {s.ToString()}");
+                    Console.SetCursorPosition(cursor, selectedValue);
+                }
+                else if (cc.Key == ConsoleKey.LeftArrow)
+                {
+                    cursor = (Console.CursorLeft > 4) ? Console.CursorLeft - 1 : Console.CursorLeft; 
+                    Console.SetCursorPosition(cursor, selectedValue);
+                }
+                else if (cc.Key == ConsoleKey.RightArrow)
+                {
+                    cursor = (Console.CursorLeft < 4+s.Length) ? Console.CursorLeft + 1 : Console.CursorLeft;
+                    Console.SetCursorPosition(cursor, selectedValue);
+                }
+                else
+                {
+                    if (cursor < 4 + s.Length)
+                    {
+                        s.Replace(s[cursor - 4], cc.KeyChar, cursor - 4, 1);
+                        cursor++;
+                        ClearString(selectedValue);
+                        Console.Write($" {options[selectedValue - 1]}: {s.ToString()}");
+                        Console.SetCursorPosition(cursor, selectedValue);
+                    }
+                    else
+                    {
+                        s.Append(cc.KeyChar);
+                        ClearString(selectedValue);
+                        Console.Write($" {options[selectedValue - 1]}: {s.ToString()}");
+                        cursor = Console.CursorLeft;
+                    }
+
+                }
+            }
+            while (cc.Key != ConsoleKey.Enter);
+            string ss=s.ToString();
             switch (selectedValue)
             {
                 case 1:
-                    a = double.Parse(ki.KeyChar.ToString() + Console.ReadLine());
+                    //a = int.Parse(ki.KeyChar.ToString() + Console.ReadLine());
+                    a = int.Parse(ss);
                     ClearString(0);
                     string aword = $"{a}*x^2";
-                    Regex areg = new Regex(@"^\S*\*?x\^2");
-                    if (Regex.IsMatch(equality, @"^\S*\*?x\^2"))
+                    Regex areg = new Regex(@"^-?(a?|[0-9]*)\*?x\^2");
+                    if (Regex.IsMatch(equality, @"^-?(a?|[0-9]*)\*?x\^"))
                     {
                         equality = (a == 0) ? areg.Replace(equality, "") : areg.Replace(equality, aword);
                         if (equality[0] == '+')
@@ -85,10 +138,10 @@ namespace HW9
                     ainput = false;
                     break;
                 case 2:
-                    b = double.Parse(ki.KeyChar.ToString() + Console.ReadLine());
+                    b = int.Parse(ki.KeyChar.ToString() + Console.ReadLine());
                     ClearString(0);
                     string bword = (b > 0) ? $"+{b}*x" : $"{b}*x";
-                    Regex breg = new Regex(@"(\+|\-)?(b?|[0-9]*[.,]?[0-9]*)\*?x(?!\^)");
+                    Regex breg = new Regex(@"(\+|\-)?(b?|[0-9]*)\*?x(?!\^)");
                     if (Regex.IsMatch(equality, @"x[^^]"))
                     {
                         equality = (b == 0) ? breg.Replace(equality, "") : breg.Replace(equality, bword);
@@ -110,10 +163,10 @@ namespace HW9
                     binput = false;
                     break;
                 case 3:
-                    c = double.Parse(ki.KeyChar.ToString() + Console.ReadLine());
+                    c = int.Parse(ki.KeyChar.ToString() + Console.ReadLine());
                     ClearString(0);
-                    Regex creg = new Regex(@"(\+|\-)+(c?|[0-9]*[.,]?[0-9]+)=");
-                    if (Regex.IsMatch(equality, @"(\+|\-)+(c?|[0-9]*[.,]?[0-9]+)="))
+                    Regex creg = new Regex(@"(\+|\-)+(c?|[0-9]*)=");
+                    if (Regex.IsMatch(equality, @"(\+|\-)+(c?|[0-9]*)="))
                     {
                         string cword = c > 0 ? creg.Replace(equality, $"+{c}=") : creg.Replace(equality, $"{c}=");
                         if (a == 0 && !ainput && b == 0 && !binput)
@@ -130,6 +183,17 @@ namespace HW9
                     cinput = false;
                     break;
             }
+        }
+
+        public enum Severity
+        {
+            Warning,
+            Error
+        }
+
+        public static void FormatData(string message, Severity severity, IDictionary<string,string> data)
+        {
+
         }
         private static void ClearString(int numstring)
         {

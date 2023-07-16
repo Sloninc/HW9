@@ -9,9 +9,9 @@ namespace HW9
     internal class QuadraticEquation
     {
         double discriminant;
-        double _a, _b, _c;
+        int _a, _b, _c;
         List<double> roots = new();
-        public QuadraticEquation(double a=0, double b=0, double c=0)
+        public QuadraticEquation(int a=0, int b=0, int c=0)
         {
             _a = a;
             _b = b;
@@ -49,7 +49,7 @@ namespace HW9
             }
             else
             {
-                throw new DiscriminantException(discriminant);
+                throw new DiscriminantException(this);
             }
         }
 
