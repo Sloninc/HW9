@@ -91,7 +91,7 @@ namespace HW9
                     cursor = (Console.CursorLeft < 4+s.Length) ? Console.CursorLeft + 1 : Console.CursorLeft;
                     Console.SetCursorPosition(cursor, selectedValue);
                 }
-                else
+                else if(Regex.IsMatch(cc.KeyChar.ToString(), @"\S+"))
                 {
                     if (cursor < 4 + s.Length)
                     {
@@ -108,7 +108,12 @@ namespace HW9
                         Console.Write($" {options[selectedValue - 1]}: {s.ToString()}");
                         cursor = Console.CursorLeft;
                     }
-
+                }
+                else
+                {
+                    ClearString(selectedValue);
+                    Console.Write($" {options[selectedValue - 1]}: {s.ToString()}");
+                    cursor = Console.CursorLeft;
                 }
             }
             while (cc.Key != ConsoleKey.Enter);
@@ -138,7 +143,8 @@ namespace HW9
                     ainput = false;
                     break;
                 case 2:
-                    b = int.Parse(ki.KeyChar.ToString() + Console.ReadLine());
+                    //b = int.Parse(ki.KeyChar.ToString() + Console.ReadLine());
+                    b = int.Parse(ss);
                     ClearString(0);
                     string bword = (b > 0) ? $"+{b}*x" : $"{b}*x";
                     Regex breg = new Regex(@"(\+|\-)?(b?|[0-9]*)\*?x(?!\^)");
@@ -163,7 +169,8 @@ namespace HW9
                     binput = false;
                     break;
                 case 3:
-                    c = int.Parse(ki.KeyChar.ToString() + Console.ReadLine());
+                    //c = int.Parse(ki.KeyChar.ToString() + Console.ReadLine());
+                    c = int.Parse(ss);
                     ClearString(0);
                     Regex creg = new Regex(@"(\+|\-)+(c?|[0-9]*)=");
                     if (Regex.IsMatch(equality, @"(\+|\-)+(c?|[0-9]*)="))
