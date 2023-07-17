@@ -9,11 +9,21 @@ namespace HW9
 {
     internal class DiscriminantException : Exception
     {
-        //private QuadraticEquation equation;
+        private IDictionary<string, string>? _date;
         public DiscriminantException(QuadraticEquation qEquit):base("Вещественных значений не найдено")
         {
-            Data.Add("Discriminant", qEquit.Discriminant);
+            Data= new Dictionary<string,string>(){ { "Discriminant", qEquit.Discriminant.ToString() } };
         }
-      
+        public new IDictionary<string,string> Data
+        {
+            get
+            {
+                    return _date;
+            }
+            private set
+            {
+                _date = value;
+            }
+        }
     }
 }

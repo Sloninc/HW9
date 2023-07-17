@@ -1,18 +1,21 @@
 ﻿using System.Text.RegularExpressions;
 using System.Text;
+using System.Collections;
+using System.Collections.Generic;
+
 namespace HW9
 {
     internal class Program
     {
 
-       private static string equality = "a*x^2+b*x+c=0";
+        private static string equality = "a*x^2+b*x+c=0";
         /// <summary>
         /// Исходное положение стрелки меню
         /// </summary>
         private static int selectedValue = 0;
         private static ConsoleKeyInfo ki;
         private static int a = 0, b = 0, c = 0;
-      private static bool ainput=true,binput=true,cinput=true;  
+        private static bool ainput=true,binput=true,cinput=true;  
         static void Main()
         {
             try
@@ -50,7 +53,7 @@ namespace HW9
             }
             catch(DiscriminantException de)
             {
-                Console.WriteLine(de.Message);
+                FormatData(de.Message, Severity.Warning, de.Data);
             }
             catch(FormatException fe)
             {
@@ -200,7 +203,35 @@ namespace HW9
 
         public static void FormatData(string message, Severity severity, IDictionary<string,string> data)
         {
-
+            if (severity.Equals(Severity.Warning))
+            {
+                Console.SetCursorPosition(0, 5);
+                Console.BackgroundColor = ConsoleColor.Yellow;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.WriteLine(new string('-', 50));
+                Console.WriteLine(message);
+                Console.WriteLine(new string('-', 50));
+                Console.WriteLine();
+                foreach(var item in data)
+                {
+                    Console.WriteLine($"{item.Key}: {item.Value}");
+                }
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            Console.WriteLine("хотите продолжить? нажмите y-да/n-нет");
+            ConsoleKeyInfo yn;
+            do
+            {
+                yn = Console.ReadKey();
+            }
+            while (yn.Key!=ConsoleKey.Y && yn.Key!=ConsoleKey.N);
+            if (yn.Key == ConsoleKey.Y)
+            {
+                Console.Clear();
+                Main();
+            }
+            else return;
         }
         private static void ClearString(int numstring)
         {
