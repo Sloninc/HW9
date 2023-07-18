@@ -15,41 +15,14 @@ namespace HW9
         private static int selectedValue = 0;
         private static ConsoleKeyInfo ki;
         private static int a = 0, b = 0, c = 0;
-        private static bool ainput=true,binput=true,cinput=true;  
+        private static bool ainput=true,binput=true,cinput=true;
+        private static string tempword = "";
         static void Main()
         {
             try
             {
-                selectedValue = 1;
-                PrintMenu();
-                WriteCursor(selectedValue);
-                //bool isNoneAllInput = true;
-                do
-                {
-
-                    ki = Console.ReadKey();
-                    ClearCursor(selectedValue);
-                    switch (ki.Key)
-                    {
-                        case ConsoleKey.UpArrow:
-                            SetUp();
-                            break;
-                        case ConsoleKey.DownArrow:
-                            SetDown();
-                            break;
-                        default:
-                            PrintEquality();
-                            break;
-                    }
-                    WriteCursor(selectedValue);
-                } while (ainput || binput || cinput);
-                Console.SetCursorPosition(0, 4);
-                QuadraticEquation func = new QuadraticEquation(a, b, c);
-                var result = func.Roots;
-                if (result.Count == 2)
-                    Console.WriteLine($"Корни уравнения {equality} равны: x1={result[0]} x2={result[1]}");
-                if(result.Count == 1)
-                    Console.WriteLine($"Корень уравнения {equality} равен: x={result[0]}");
+                Select();
+                Result();  
             }
             catch(DiscriminantException de)
             {
@@ -57,75 +30,164 @@ namespace HW9
             }
             catch(FormatException fe)
             {
-                Console.WriteLine(fe.Message);
+                string message = "";
+                int[] abc = { a, b, c };
+                bool[] abcinput = { ainput, binput, cinput };
+                for(int i = 0; i < options.Length; i++)
+                {
+                    if (i == selectedValue - 1)
+                    {
+                        fe.Data[(options[i])] = tempword;
+                        message = $"Неверный формат параметра {options[i]}";
+                    }
+                    else
+                    {
+                        fe.Data[options[i]] = !abcinput[i] ? abc[i].ToString() : "не определён";    
+                    }
+                }
+                FormatData(message, Severity.Error, fe.Data);
             }
             catch(OverflowException oe)
             {
-                Console.WriteLine(oe.Message);
+                string message = "";
+                for (int i = 0; i < options.Length; i++)
+                {
+                    if (i == selectedValue - 1)
+                    {
+                        oe.Data[(options[i])] = tempword;
+                        message = $"введенное значение \"{options[i]}\" не вмещается в тип int, значение должно быть в дипазоне от -2 147 483 648 до 2 147 483 647";
+                    }
+                }
+                FormatData(message, Severity.Note, oe.Data);
             }
             Console.ReadLine();
         }
 
-        private static void PrintEquality()
+        /// <summary>
+        /// Выбор пользователем коэффициента для ввода значения
+        /// </summary>
+        #region Select
+        private static void Select()
+        {
+            selectedValue = 1;
+            PrintMenu();
+            WriteCursor(selectedValue);
+            do
+            {
+                ki = Console.ReadKey();
+                ClearCursor(selectedValue);
+                switch (ki.Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        SetUp();
+                        break;
+                    case ConsoleKey.DownArrow:
+                        SetDown();
+                        break;
+                    default:
+                        BuildInput();
+                        PrintEquality();
+                        break;
+                }
+                WriteCursor(selectedValue);
+            } while (ainput || binput || cinput);
+        }
+        #endregion
+
+        /// <summary>
+        /// Вывод результата - значения корней уравнения.
+        /// </summary>
+        #region Result
+        private static void Result()
+        {
+            Console.SetCursorPosition(0, 4);
+            QuadraticEquation func = new QuadraticEquation(a, b, c);
+            var result = func.Roots;
+            if (result.Count == 2)
+                Console.WriteLine($"Корни уравнения {equality} равны: x1={result[0]} x2={result[1]}");
+            if (result.Count == 1)
+                Console.WriteLine($"Корень уравнения {equality} равен: x={result[0]}");
+        }
+        #endregion
+
+        /// <summary>
+        /// Построение входных данных
+        /// </summary>
+        #region BuildInput
+        private static void BuildInput()
         {
             ClearString(selectedValue);
             Console.Write($" {options[selectedValue - 1]}: {ki.KeyChar.ToString()}");
-            StringBuilder s = new StringBuilder(ki.KeyChar.ToString());
-            ConsoleKeyInfo cc;
+            StringBuilder wordbuild = new StringBuilder(ki.KeyChar.ToString());
+            ConsoleKeyInfo letter;
             int cursor = Console.CursorLeft;
             do
             {
-                cc = Console.ReadKey();
-                if (cc.Key == ConsoleKey.Backspace)
+                letter = Console.ReadKey();
+                switch (letter.Key)
                 {
-                    s = (cursor > 4) ? s.Remove(cursor-5, 1) : s;
-                    cursor = (cursor > 4) ? cursor - 1 : cursor;
-                    ClearString(selectedValue);
-                    Console.Write($" {options[selectedValue - 1]}: {s.ToString()}");
-                    Console.SetCursorPosition(cursor, selectedValue);
-                }
-                else if (cc.Key == ConsoleKey.LeftArrow)
-                {
-                    cursor = (Console.CursorLeft > 4) ? Console.CursorLeft - 1 : Console.CursorLeft; 
-                    Console.SetCursorPosition(cursor, selectedValue);
-                }
-                else if (cc.Key == ConsoleKey.RightArrow)
-                {
-                    cursor = (Console.CursorLeft < 4+s.Length) ? Console.CursorLeft + 1 : Console.CursorLeft;
-                    Console.SetCursorPosition(cursor, selectedValue);
-                }
-                else if(Regex.IsMatch(cc.KeyChar.ToString(), @"\S+"))
-                {
-                    if (cursor < 4 + s.Length)
-                    {
-                        s.Replace(s[cursor - 4], cc.KeyChar, cursor - 4, 1);
-                        cursor++;
+                    case ConsoleKey.Backspace:
+                        wordbuild = (cursor > 4) ? wordbuild.Remove(cursor - 5, 1) : wordbuild;
+                        cursor = (cursor > 4) ? cursor - 1 : cursor;
                         ClearString(selectedValue);
-                        Console.Write($" {options[selectedValue - 1]}: {s.ToString()}");
+                        Console.Write($" {options[selectedValue - 1]}: {wordbuild.ToString()}");
                         Console.SetCursorPosition(cursor, selectedValue);
-                    }
-                    else
-                    {
-                        s.Append(cc.KeyChar);
-                        ClearString(selectedValue);
-                        Console.Write($" {options[selectedValue - 1]}: {s.ToString()}");
-                        cursor = Console.CursorLeft;
-                    }
-                }
-                else
-                {
-                    ClearString(selectedValue);
-                    Console.Write($" {options[selectedValue - 1]}: {s.ToString()}");
-                    cursor = Console.CursorLeft;
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        cursor = (Console.CursorLeft > 4) ? Console.CursorLeft - 1 : Console.CursorLeft;
+                        Console.SetCursorPosition(cursor, selectedValue);
+                        break;
+                    case ConsoleKey.RightArrow:
+                        cursor = (Console.CursorLeft < 4 + wordbuild.Length) ? Console.CursorLeft + 1 : Console.CursorLeft;
+                        Console.SetCursorPosition(cursor, selectedValue);
+                        break;
+                    default:
+                        if (Regex.IsMatch(letter.KeyChar.ToString(), @"\S+"))
+                        {
+                            if (cursor < 4 + wordbuild.Length)
+                            {
+                                wordbuild.Replace(wordbuild[cursor - 4], letter.KeyChar, cursor - 4, 1);
+                                cursor++;
+                                ClearString(selectedValue);
+                                Console.Write($" {options[selectedValue - 1]}: {wordbuild.ToString()}");
+                                Console.SetCursorPosition(cursor, selectedValue);
+                            }
+                            else
+                            {
+                                wordbuild.Append(letter.KeyChar);
+                                ClearString(selectedValue);
+                                Console.Write($" {options[selectedValue - 1]}: {wordbuild.ToString()}");
+                                cursor = Console.CursorLeft;
+                            }
+                        }
+                        else
+                        {
+                            ClearString(selectedValue);
+                            Console.Write($" {options[selectedValue - 1]}: {wordbuild.ToString()}");
+                            cursor = Console.CursorLeft;
+                        }
+                        break;
                 }
             }
-            while (cc.Key != ConsoleKey.Enter);
-            string ss=s.ToString();
+            while (letter.Key != ConsoleKey.Enter);
+            tempword = wordbuild.ToString();
+        }
+        #endregion
+
+        /// <summary>
+        /// Формирование и вывод квадратного уравнения с пользовательскими данными
+        /// </summary>
+        /// <exception cref="FormatException"></exception>
+        #region PrintEquality
+        private static void PrintEquality()
+        {
             switch (selectedValue)
             {
                 case 1:
-                    //a = int.Parse(ki.KeyChar.ToString() + Console.ReadLine());
-                    a = int.Parse(ss);
+                    var isParsed = int.TryParse(tempword,out int acoef);
+                    if (isParsed) a = acoef;
+                    else throw new FormatException(tempword);
+                    
                     ClearString(0);
                     string aword = $"{a}*x^2";
                     Regex areg = new Regex(@"^-?(a?|[0-9]*)\*?x\^2");
@@ -146,8 +208,7 @@ namespace HW9
                     ainput = false;
                     break;
                 case 2:
-                    //b = int.Parse(ki.KeyChar.ToString() + Console.ReadLine());
-                    b = int.Parse(ss);
+                    b = int.Parse(tempword);
                     ClearString(0);
                     string bword = (b > 0) ? $"+{b}*x" : $"{b}*x";
                     Regex breg = new Regex(@"(\+|\-)?(b?|[0-9]*)\*?x(?!\^)");
@@ -172,8 +233,7 @@ namespace HW9
                     binput = false;
                     break;
                 case 3:
-                    //c = int.Parse(ki.KeyChar.ToString() + Console.ReadLine());
-                    c = int.Parse(ss);
+                    c = int.Parse(tempword);
                     ClearString(0);
                     Regex creg = new Regex(@"(\+|\-)+(c?|[0-9]*)=");
                     if (Regex.IsMatch(equality, @"(\+|\-)+(c?|[0-9]*)="))
@@ -194,63 +254,84 @@ namespace HW9
                     break;
             }
         }
+        #endregion
 
+        /// <summary>
+        /// Тип исключения
+        /// </summary>
+        #region 
         public enum Severity
         {
+            Note,
             Warning,
             Error
         }
+        #endregion
 
-        public static void FormatData(string message, Severity severity, IDictionary<string,string> data)
+        /// <summary>
+        /// Вывод информации об обработанных исключениях
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="severity"></param>
+        /// <param name="data"></param>
+        #region FormatData
+        public static void FormatData(string message, Severity severity, IDictionary data)
         {
-            if (severity.Equals(Severity.Warning))
-            {
                 Console.SetCursorPosition(0, 5);
-                Console.BackgroundColor = ConsoleColor.Yellow;
+            switch (severity)
+            {
+                case Severity.Note:
+                    Console.BackgroundColor = ConsoleColor.Green;
+                    break;
+                case Severity.Warning:
+                    Console.BackgroundColor = ConsoleColor.Yellow;
+                    break;
+                case Severity.Error:
+                    Console.BackgroundColor = ConsoleColor.Red;
+                    break;
+            }
                 Console.ForegroundColor = ConsoleColor.Black;
                 Console.WriteLine(new string('-', 50));
                 Console.WriteLine(message);
                 Console.WriteLine(new string('-', 50));
                 Console.WriteLine();
-                foreach(var item in data)
+                foreach (var item in data.Keys)
                 {
-                    Console.WriteLine($"{item.Key}: {item.Value}");
+                    Console.WriteLine($"{item}: {data[item]}");
                 }
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.White;
-            }
-            Console.WriteLine("хотите продолжить? нажмите y-да/n-нет");
-            ConsoleKeyInfo yn;
-            do
-            {
-                yn = Console.ReadKey();
-            }
-            while (yn.Key!=ConsoleKey.Y && yn.Key!=ConsoleKey.N);
-            if (yn.Key == ConsoleKey.Y)
-            {
-                Console.Clear();
-                Main();
-            }
-            else return;
         }
+        #endregion
+
+        /// <summary>
+        /// Очистка строки
+        /// </summary>
+        /// <param name="numstring"></param>
+        #region ClearString
         private static void ClearString(int numstring)
         {
             Console.SetCursorPosition(0, numstring);
             Console.WriteLine(new string(' ', 60));
             Console.SetCursorPosition(0, numstring);
         }
+        #endregion
+
         /// <summary>
         /// Опции меню
         /// </summary>
+        #region Options
         private static string[] options = new[]{
             "a",
             "b",
             "c"
         };
+        #endregion
 
         /// <summary>
         /// На одну строку вниз
         /// </summary>
+        #region SetDown
         private static void SetDown()
         {
             if (selectedValue < options.Length)
@@ -262,10 +343,12 @@ namespace HW9
                 selectedValue = 1;
             }
         }
+        #endregion
 
         /// <summary>
         /// На одну строку вверх
         /// </summary>
+        #region SetUp
         private static void SetUp()
         {
             if (selectedValue > 1)
@@ -277,10 +360,12 @@ namespace HW9
                 selectedValue = 3;
             }
         }
+        #endregion
 
         /// <summary>
         /// Вывести меню квадратного уравнения
         /// </summary>
+        #region PrintMenu
         private static void PrintMenu()
         {
             Console.WriteLine(equality);
@@ -289,23 +374,25 @@ namespace HW9
                 Console.WriteLine($" {options[i]}:");
             }
         }
+        #endregion
 
 
-
-   
-
+        #region WriteCursor
         private static void WriteCursor(int pos)
         {
             Console.SetCursorPosition(0, pos);
             Console.Write(">");
             Console.SetCursorPosition(0, pos);
         }
+        #endregion
 
+        #region ClearCursor
         private static void ClearCursor(int pos)
         {
             Console.SetCursorPosition(0, pos);
             Console.Write(" ");
             Console.SetCursorPosition(0, pos);
         }
+        #endregion
     }
 }
