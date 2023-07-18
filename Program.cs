@@ -7,18 +7,54 @@ namespace HW9
 {
     internal class Program
     {
-
-        private static string equality = "a*x^2+b*x+c=0";
+        /// <summary>
+        /// Строка уравнения
+        /// </summary>
+        private static string equality;
         /// <summary>
         /// Исходное положение стрелки меню
         /// </summary>
-        private static int selectedValue = 0;
+        private static int selectedValue;
+        /// <summary>
+        /// Введённый пользователем символ
+        /// </summary>
         private static ConsoleKeyInfo ki;
-        private static int a = 0, b = 0, c = 0;
-        private static bool ainput=true,binput=true,cinput=true;
-        private static string tempword = "";
+        /// <summary>
+        /// Коэффициенты уравнения
+        /// </summary>
+        private static int a, b, c;
+        /// <summary>
+        /// Флаги определения коэффициентов
+        /// </summary>
+        private static bool ainput, binput, cinput;
+        /// <summary>
+        /// Строка данных, введённых пользователем.
+        /// </summary>
+        private static string tempword;
+
+        /// <summary>
+        /// Очистка экрана и инициализация полей
+        /// </summary>
+        #region Initialize
+        static void Initialize()
+        {
+            Console.Clear();
+            equality = "a*x^2+b*x+c=0";
+            selectedValue = 0;
+            a = 0;
+            b = 0;
+            c = 0;
+            ainput = true;
+            binput = true;
+            cinput = true;
+            tempword = "";
+        }
+        #endregion
+
+        #region Main
         static void Main()
         {
+            Initialize();
             try
             {
                 Select();
@@ -60,8 +96,18 @@ namespace HW9
                 }
                 FormatData(message, Severity.Note, oe.Data);
             }
-            Console.ReadLine();
+            Console.WriteLine("Для продолжения нажмите \"Enter\", для выхода нажмите \"Escape\"");
+            while (true)
+            {
+                ConsoleKeyInfo key= Console.ReadKey();  
+                if (key.Key == ConsoleKey.Enter)
+                    Main();
+                if (key.Key == ConsoleKey.Escape)
+                    return;
+                ClearString(Console.CursorTop);
+            }
         }
+        #endregion
 
         /// <summary>
         /// Выбор пользователем коэффициента для ввода значения
