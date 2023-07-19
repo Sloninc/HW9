@@ -10,7 +10,7 @@ namespace HW9
     {
         double discriminant;
         int _a, _b, _c;
-        List<double> roots = new();
+        List<double> roots = new(); //Список для хранения корней уравнения
         public QuadraticEquation(int a=0, int b=0, int c=0)
         {
             _a = a;

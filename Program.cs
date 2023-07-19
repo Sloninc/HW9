@@ -10,7 +10,7 @@ namespace HW9
         /// <summary>
         /// Строка уравнения
         /// </summary>
-        private static string equality;
+        private static string equality="a*x^2+b*x+c=0";
         /// <summary>
         /// Исходное положение стрелки меню
         /// </summary>
@@ -30,7 +30,7 @@ namespace HW9
         /// <summary>
         /// Строка данных, введённых пользователем.
         /// </summary>
-        private static string tempword;
+        private static string tempword="";
 
         /// <summary>
         /// Очистка экрана и инициализация полей
@@ -121,6 +121,8 @@ namespace HW9
             do
             {
                 ki = Console.ReadKey();
+                if(ki.Key == ConsoleKey.Escape)
+                    Escape();
                 ClearCursor(selectedValue);
                 switch (ki.Key)
                 {
@@ -172,6 +174,9 @@ namespace HW9
                 letter = Console.ReadKey();
                 switch (letter.Key)
                 {
+                    case ConsoleKey.Escape:
+                        Escape();
+                        break;
                     case ConsoleKey.Backspace:
                         wordbuild = (cursor > 4) ? wordbuild.Remove(cursor - 5, 1) : wordbuild;
                         cursor = (cursor > 4) ? cursor - 1 : cursor;
@@ -221,6 +226,28 @@ namespace HW9
         #endregion
 
         /// <summary>
+        /// Опция завершения программы при нажатии Escape
+        /// </summary>
+        #region Escape
+        static void Escape()
+        {
+            Console.Clear();
+            Console.Write("\x1B[1D"); // убрать символ
+            Console.Write("\x1B[1P"); // Escape
+            Console.WriteLine("Завершить работу программы? y/n");
+            while (true)
+            {
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (key.Key == ConsoleKey.N)
+                    Main();
+                if (key.Key == ConsoleKey.Y)
+                   Environment.Exit(0);
+                ClearString(Console.CursorTop);
+            }
+        }
+        #endregion
+
+        /// <summary>
         /// Формирование и вывод квадратного уравнения с пользовательскими данными
         /// </summary>
         /// <exception cref="FormatException"></exception>
@@ -230,10 +257,7 @@ namespace HW9
             switch (selectedValue)
             {
                 case 1:
-                    var isParsed = int.TryParse(tempword,out int acoef);
-                    if (isParsed) a = acoef;
-                    else throw new FormatException(tempword);
-                    
+                    a=int.Parse(tempword);
                     ClearString(0);
                     string aword = $"{a}*x^2";
                     Regex areg = new Regex(@"^-?(a?|[0-9]*)\*?x\^2");
@@ -305,7 +329,7 @@ namespace HW9
         /// <summary>
         /// Тип исключения
         /// </summary>
-        #region 
+        #region Severity
         public enum Severity
         {
             Note,
