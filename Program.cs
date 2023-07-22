@@ -298,8 +298,8 @@ namespace HW9
                 case 3:
                     _c = int.Parse(_tempword);
                     ClearString(0);
-                    Regex creg = new Regex(@"(\+|\-)+(c?|[0-9]*)=");
-                    if (Regex.IsMatch(_equality, @"(\+|\-)+(c?|[0-9]*)="))
+                    Regex creg = new Regex(@"(\+|\-)?(c?|[0-9]*)=");
+                    if (Regex.IsMatch(_equality, @"(\+|\-)?(c?|[0-9]*)="))
                     {
                         string cword = _c > 0 ? creg.Replace(_equality, $"+{_c}=") : creg.Replace(_equality, $"{_c}=");
                         if (_a == 0 && !_aInput && _b == 0 && !_bInput)
