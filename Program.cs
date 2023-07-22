@@ -96,7 +96,7 @@ namespace HW9
                 if (key.Key == ConsoleKey.Enter)
                     Main();
                 if (key.Key == ConsoleKey.Escape)
-                    return;
+                    Environment.Exit(0);
                 ClearString(Console.CursorTop);
             }
         }
